@@ -96,7 +96,11 @@
 \ottprodline{|}{ \forall }{}{}{}{}\ottprodnewline
 \ottprodline{|}{ \emptyset }{}{}{}{}\ottprodnewline
 \ottprodline{|}{ \vdash }{}{}{}{}\ottprodnewline
+\ottprodline{|}{ {\vdash_\#} }{}{}{}{}\ottprodnewline
+\ottprodline{|}{ {\vdash_!} }{}{}{}{}\ottprodnewline
+\ottprodline{|}{ {\vdash_{\#\#} } }{}{}{}{}\ottprodnewline
 \ottprodline{|}{ \rightarrow }{}{}{}{}\ottprodnewline
+\ottprodline{|}{ \gg }{}{}{}{}\ottprodnewline
 \ottprodline{|}{ \notin }{}{}{}{}\ottprodnewline
 \ottprodline{|}{ \in }{}{}{}{}\ottprodnewline
 \ottprodline{|}{\ottsym{,}}{}{}{}{}}
@@ -116,25 +120,54 @@
 \ottfirstprodline{|}{\ottnt{judgement}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\Gamma  \ottsym{(}  \ottmv{x}  \ottsym{)}  \ottsym{=}  \ottnt{T}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\ottkw{uniq} \, \Gamma}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottmv{x}  \notin  \Gamma}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottmv{a}  \notin \, \ottkw{labels} \, \ottnt{T}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottmv{A}  \notin \, \ottkw{labels} \, \ottnt{T}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\ottnt{s}  \ottsym{(}  \ottmv{x}  \ottsym{)}  \ottsym{=}  \ottnt{t}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\ottkw{uniq} \, \ottnt{s}}{}{}{}{}\ottprodnewline
-\ottprodline{|}{\ottnt{d}  \in  \ottnt{defs}}{}{}{}{}}
+\ottprodline{|}{\ottnt{d}  \in  \ottnt{defs}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottnt{T_{{\mathrm{1}}}}  \ottsym{=}  \ottnt{T_{{\mathrm{2}}}}}{}{}{}{}}
 
-\newcommand{\ottJtyping}{
-\ottrulehead{\ottnt{Jtyping}}{::=}{}\ottprodnewline
+\newcommand{\ottTyping}{
+\ottrulehead{\ottnt{Typing}}{::=}{}\ottprodnewline
 \ottfirstprodline{|}{\Gamma  \vdash  \ottnt{t}  \ottsym{:}  \ottnt{T}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\Gamma  \vdash  \ottnt{d}  \ottsym{:}  \ottnt{T}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\Gamma  \vdash  \ottnt{defs}  \ottsym{:}  \ottnt{T}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\Gamma  \vdash  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}{}{}{}{}}
 
-\newcommand{\ottJop}{
-\ottrulehead{\ottnt{Jop}}{::=}{}\ottprodnewline
+\newcommand{\ottInert}{
+\ottrulehead{\ottnt{Inert}}{::=}{}\ottprodnewline
+\ottfirstprodline{|}{\ottkw{record} \, \ottnt{T}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottkw{inert} \, \ottnt{T}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottkw{inert} \, \Gamma}{}{}{}{}}
+
+\newcommand{\ottPreciseTyping}{
+\ottrulehead{\ottnt{PreciseTyping}}{::=}{}\ottprodnewline
+\ottfirstprodline{|}{\Gamma  {\vdash_!}  \ottnt{val}  \ottsym{:}  \ottnt{T}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottnt{T_{{\mathrm{2}}}}}{}{}{}{}}
+
+\newcommand{\ottTightTyping}{
+\ottrulehead{\ottnt{TightTyping}}{::=}{}\ottprodnewline
+\ottfirstprodline{|}{\Gamma  {\vdash_\#}  \ottnt{t}  \ottsym{:}  \ottnt{T}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}{}{}{}{}}
+
+\newcommand{\ottInvertibleTyping}{
+\ottrulehead{\ottnt{InvertibleTyping}}{::=}{}\ottprodnewline
+\ottfirstprodline{|}{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T}}{}{}{}{}}
+
+\newcommand{\ottOperationalSemantics}{
+\ottrulehead{\ottnt{OperationalSemantics}}{::=}{}\ottprodnewline
 \ottfirstprodline{|}{\ottsym{(}  \ottnt{s_{{\mathrm{1}}}}  \ottsym{,}  \ottnt{t_{{\mathrm{1}}}}  \ottsym{)}  \rightarrow  \ottsym{(}  \ottnt{s_{{\mathrm{2}}}}  \ottsym{,}  \ottnt{t_{{\mathrm{2}}}}  \ottsym{)}}{}{}{}{}}
 
 \newcommand{\ottjudgement}{
 \ottrulehead{\ottnt{judgement}}{::=}{}\ottprodnewline
-\ottfirstprodline{|}{\ottnt{Jtyping}}{}{}{}{}\ottprodnewline
-\ottprodline{|}{\ottnt{Jop}}{}{}{}{}}
+\ottfirstprodline{|}{\ottnt{Typing}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottnt{Inert}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottnt{PreciseTyping}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottnt{TightTyping}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottnt{InvertibleTyping}}{}{}{}{}\ottprodnewline
+\ottprodline{|}{\ottnt{OperationalSemantics}}{}{}{}{}}
 
 \newcommand{\ottuserXXsyntax}{
 \ottrulehead{\ottnt{user\_syntax}}{::=}{}\ottprodnewline
@@ -165,14 +198,18 @@
 \ottctx\ottinterrule
 \ottstack\ottinterrule
 \ottformula\ottinterrule
-\ottJtyping\ottinterrule
-\ottJop\ottinterrule
+\ottTyping\ottinterrule
+\ottInert\ottinterrule
+\ottPreciseTyping\ottinterrule
+\ottTightTyping\ottinterrule
+\ottInvertibleTyping\ottinterrule
+\ottOperationalSemantics\ottinterrule
 \ottjudgement\ottinterrule
 \ottuserXXsyntax\ottafterlastrule
 }}
 
 % defnss
-% defns Jtyping
+% defns Typing
 %% defn ty_trm
 \newcommand{\ottdruletyXXvar}[1]{\ottdrule[#1]{%
 \ottpremise{\Gamma  \ottsym{(}  \ottmv{x}  \ottsym{)}  \ottsym{=}  \ottnt{T}}%
@@ -200,9 +237,10 @@
 
 
 \newcommand{\ottdruletyXXnewXXintro}[1]{\ottdrule[#1]{%
-\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottsym{[}  \ottmv{x}  \ottsym{/}  \ottmv{x}  \ottsym{]}  \ottnt{T}  \ottsym{)}  \vdash  \ottnt{defs}  \ottsym{:}  \ottnt{T}}%
+\ottpremise{\ottnt{T_{{\mathrm{1}}}}  \ottsym{=}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{defs}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
 }{
-\Gamma  \vdash  \nu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \ottnt{defs}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
+\Gamma  \vdash  \nu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{defs}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{)}}{%
 {\ottdrulename{ty\_new\_intro}}{}%
 }}
 
@@ -399,12 +437,12 @@
 }}
 
 
-\newcommand{\ottdrulesubtypXXforall}[1]{\ottdrule[#1]{%
+\newcommand{\ottdrulesubtypXXall}[1]{\ottdrule[#1]{%
 \ottpremise{\Gamma  \vdash  \ottnt{T_{{\mathrm{3}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{1}}}}}%
 \ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{4}}}}}%
 }{
 \Gamma  \vdash  \forall \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \forall \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{3}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{4}}}}}{%
-{\ottdrulename{subtyp\_forall}}{}%
+{\ottdrulename{subtyp\_all}}{}%
 }}
 
 \newcommand{\ottdefnsubtyp}[1]{\begin{ottdefnblock}[#1]{$\Gamma  \vdash  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}$}{}
@@ -419,14 +457,516 @@
 \ottusedrule{\ottdrulesubtypXXtyp{}}
 \ottusedrule{\ottdrulesubtypXXselOne{}}
 \ottusedrule{\ottdrulesubtypXXselTwo{}}
-\ottusedrule{\ottdrulesubtypXXforall{}}
+\ottusedrule{\ottdrulesubtypXXall{}}
 \end{ottdefnblock}}
 
 
-\newcommand{\ottdefnsJtyping}{
+\newcommand{\ottdefnsTyping}{
 \ottdefntyXXtrm{}\ottdefntyXXdef{}\ottdefntyXXdefs{}\ottdefnsubtyp{}}
 
-% defns Jop
+% defns Inert
+%% defn record_type
+\newcommand{\ottdrulertXXoneXXtrm}[1]{\ottdrule[#1]{%
+}{
+\ottkw{record} \, \ottsym{\{}  \ottmv{a}  \ottsym{:}  \ottnt{T}  \ottsym{\}}}{%
+{\ottdrulename{rt\_one\_trm}}{}%
+}}
+
+
+\newcommand{\ottdrulertXXoneXXtyp}[1]{\ottdrule[#1]{%
+}{
+\ottkw{record} \, \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T}  \ottsym{.}  \ottsym{.}  \ottnt{T}  \ottsym{\}}}{%
+{\ottdrulename{rt\_one\_typ}}{}%
+}}
+
+
+\newcommand{\ottdrulertXXandXXtrm}[1]{\ottdrule[#1]{%
+\ottpremise{\ottkw{record} \, \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\ottmv{a}  \notin \, \ottkw{labels} \, \ottnt{T_{{\mathrm{1}}}}}%
+}{
+\ottkw{record} \, \ottnt{T_{{\mathrm{1}}}}  \wedge  \ottsym{\{}  \ottmv{a}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{\}}}{%
+{\ottdrulename{rt\_and\_trm}}{}%
+}}
+
+
+\newcommand{\ottdrulertXXandXXtyp}[1]{\ottdrule[#1]{%
+\ottpremise{\ottkw{record} \, \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\ottmv{A}  \notin \, \ottkw{labels} \, \ottnt{T_{{\mathrm{1}}}}}%
+}{
+\ottkw{record} \, \ottnt{T_{{\mathrm{1}}}}  \wedge  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{\}}}{%
+{\ottdrulename{rt\_and\_typ}}{}%
+}}
+
+\newcommand{\ottdefnrecordXXtype}[1]{\begin{ottdefnblock}[#1]{$\ottkw{record} \, \ottnt{T}$}{}
+\ottusedrule{\ottdrulertXXoneXXtrm{}}
+\ottusedrule{\ottdrulertXXoneXXtyp{}}
+\ottusedrule{\ottdrulertXXandXXtrm{}}
+\ottusedrule{\ottdrulertXXandXXtyp{}}
+\end{ottdefnblock}}
+
+%% defn inert_typ
+\newcommand{\ottdruleinertXXtypXXall}[1]{\ottdrule[#1]{%
+}{
+\ottkw{inert} \, \forall \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{inert\_typ\_all}}{}%
+}}
+
+
+\newcommand{\ottdruleinertXXtypXXbnd}[1]{\ottdrule[#1]{%
+\ottpremise{\ottkw{record} \, \ottnt{T}}%
+}{
+\ottkw{inert} \, \mu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
+{\ottdrulename{inert\_typ\_bnd}}{}%
+}}
+
+\newcommand{\ottdefninertXXtyp}[1]{\begin{ottdefnblock}[#1]{$\ottkw{inert} \, \ottnt{T}$}{}
+\ottusedrule{\ottdruleinertXXtypXXall{}}
+\ottusedrule{\ottdruleinertXXtypXXbnd{}}
+\end{ottdefnblock}}
+
+%% defn inert_ctx
+\newcommand{\ottdruleinertXXempty}[1]{\ottdrule[#1]{%
+}{
+\ottkw{inert} \, \emptyset}{%
+{\ottdrulename{inert\_empty}}{}%
+}}
+
+
+\newcommand{\ottdruleinertXXall}[1]{\ottdrule[#1]{%
+\ottpremise{\ottkw{inert} \, \Gamma}%
+\ottpremise{\ottkw{inert} \, \ottnt{T}}%
+\ottpremise{\ottmv{x}  \notin  \Gamma}%
+}{
+\ottkw{inert} \, \ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
+{\ottdrulename{inert\_all}}{}%
+}}
+
+\newcommand{\ottdefninertXXctx}[1]{\begin{ottdefnblock}[#1]{$\ottkw{inert} \, \Gamma$}{}
+\ottusedrule{\ottdruleinertXXempty{}}
+\ottusedrule{\ottdruleinertXXall{}}
+\end{ottdefnblock}}
+
+
+\newcommand{\ottdefnsInert}{
+\ottdefnrecordXXtype{}\ottdefninertXXtyp{}\ottdefninertXXctx{}}
+
+% defns PreciseTyping
+%% defn ty_val_p
+\newcommand{\ottdruletyXXallXXintroXXp}[1]{\ottdrule[#1]{%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{t}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_!}  \lambda  \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottsym{.}  \ottnt{t}  \ottsym{:}  \forall \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_all\_intro\_p}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXnewXXintroXXp}[1]{\ottdrule[#1]{%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \vdash  \ottnt{defs}  \ottsym{:}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_!}  \nu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \ottnt{defs}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
+{\ottdrulename{ty\_new\_intro\_p}}{}%
+}}
+
+\newcommand{\ottdefntyXXvalXXp}[1]{\begin{ottdefnblock}[#1]{$\Gamma  {\vdash_!}  \ottnt{val}  \ottsym{:}  \ottnt{T}$}{}
+\ottusedrule{\ottdruletyXXallXXintroXXp{}}
+\ottusedrule{\ottdruletyXXnewXXintroXXp{}}
+\end{ottdefnblock}}
+
+%% defn precise_flow
+\newcommand{\ottdrulepfXXbind}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  \ottsym{(}  \ottmv{x}  \ottsym{)}  \ottsym{=}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \gg  \ottnt{T}}{%
+{\ottdrulename{pf\_bind}}{}%
+}}
+
+
+\newcommand{\ottdrulepfXXopen}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \mu \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{)}}%
+}{
+\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottsym{[}  \ottmv{x}  \ottsym{/}  \ottmv{z}  \ottsym{]}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{pf\_open}}{}%
+}}
+
+
+\newcommand{\ottdrulepfXXandOne}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottnt{T_{{\mathrm{2}}}}  \wedge  \ottnt{T_{{\mathrm{3}}}}}%
+}{
+\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{pf\_and1}}{}%
+}}
+
+
+\newcommand{\ottdrulepfXXandTwo}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottnt{T_{{\mathrm{2}}}}  \wedge  \ottnt{T_{{\mathrm{3}}}}}%
+}{
+\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottnt{T_{{\mathrm{3}}}}}{%
+{\ottdrulename{pf\_and2}}{}%
+}}
+
+\newcommand{\ottdefnpreciseXXflow}[1]{\begin{ottdefnblock}[#1]{$\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottnt{T_{{\mathrm{2}}}}$}{}
+\ottusedrule{\ottdrulepfXXbind{}}
+\ottusedrule{\ottdrulepfXXopen{}}
+\ottusedrule{\ottdrulepfXXandOne{}}
+\ottusedrule{\ottdrulepfXXandTwo{}}
+\end{ottdefnblock}}
+
+
+\newcommand{\ottdefnsPreciseTyping}{
+\ottdefntyXXvalXXp{}\ottdefnpreciseXXflow{}}
+
+% defns TightTyping
+%% defn ty_trm_t
+\newcommand{\ottdruletyXXvarXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  \ottsym{(}  \ottmv{x}  \ottsym{)}  \ottsym{=}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \ottnt{T}}{%
+{\ottdrulename{ty\_var\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXallXXintroXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{t}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_\#}  \lambda  \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottsym{.}  \ottnt{t}  \ottsym{:}  \forall \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_all\_intro\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXallXXelimXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \forall \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottmv{y}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottmv{x} \, \ottmv{y}  \ottsym{:}  \ottsym{[}  \ottmv{y}  \ottsym{/}  \ottmv{z}  \ottsym{]}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_all\_elim\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXnewXXintroXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \vdash  \ottnt{defs}  \ottsym{:}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_\#}  \nu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \ottnt{defs}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
+{\ottdrulename{ty\_new\_intro\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXnewXXelimXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \ottsym{\{}  \ottmv{a}  \ottsym{:}  \ottnt{T}  \ottsym{\}}}%
+}{
+\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{.}  \ottmv{a}  \ottsym{:}  \ottnt{T}}{%
+{\ottdrulename{ty\_new\_elim\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXletXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{t_{{\mathrm{1}}}}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \vdash  \ottnt{t_{{\mathrm{2}}}}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottkw{let} \, \ottmv{x}  \ottsym{=}  \ottnt{t_{{\mathrm{1}}}} \, \ottkw{in} \, \ottnt{t_{{\mathrm{2}}}}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_let\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXrecXXintroXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
+{\ottdrulename{ty\_rec\_intro\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXrecXXelimXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T}  \ottsym{)}}%
+}{
+\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \ottsym{[}  \ottmv{x}  \ottsym{/}  \ottmv{z}  \ottsym{]}  \ottnt{T}}{%
+{\ottdrulename{ty\_rec\_elim\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXandXXintroXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \wedge  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_and\_intro\_t}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXsubXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{t}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottnt{t}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_sub\_t}}{}%
+}}
+
+\newcommand{\ottdefntyXXtrmXXt}[1]{\begin{ottdefnblock}[#1]{$\Gamma  {\vdash_\#}  \ottnt{t}  \ottsym{:}  \ottnt{T}$}{}
+\ottusedrule{\ottdruletyXXvarXXt{}}
+\ottusedrule{\ottdruletyXXallXXintroXXt{}}
+\ottusedrule{\ottdruletyXXallXXelimXXt{}}
+\ottusedrule{\ottdruletyXXnewXXintroXXt{}}
+\ottusedrule{\ottdruletyXXnewXXelimXXt{}}
+\ottusedrule{\ottdruletyXXletXXt{}}
+\ottusedrule{\ottdruletyXXrecXXintroXXt{}}
+\ottusedrule{\ottdruletyXXrecXXelimXXt{}}
+\ottusedrule{\ottdruletyXXandXXintroXXt{}}
+\ottusedrule{\ottdruletyXXsubXXt{}}
+\end{ottdefnblock}}
+
+%% defn subtyp_t
+\newcommand{\ottdrulesubtypXXtopXXt}[1]{\ottdrule[#1]{%
+}{
+\Gamma  {\vdash_\#}  \ottnt{T}  \ottsym{<:}  \top}{%
+{\ottdrulename{subtyp\_top\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXbotXXt}[1]{\ottdrule[#1]{%
+}{
+\Gamma  {\vdash_\#}  \bot  \ottsym{<:}  \ottnt{T}}{%
+{\ottdrulename{subtyp\_bot\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXreflXXt}[1]{\ottdrule[#1]{%
+}{
+\Gamma  {\vdash_\#}  \ottnt{T}  \ottsym{<:}  \ottnt{T}}{%
+{\ottdrulename{subtyp\_refl\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXtransXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{3}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{3}}}}}{%
+{\ottdrulename{subtyp\_trans\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXandOneOneXXt}[1]{\ottdrule[#1]{%
+}{
+\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \wedge  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{1}}}}}{%
+{\ottdrulename{subtyp\_and11\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXandOneTwoXXt}[1]{\ottdrule[#1]{%
+}{
+\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \wedge  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{subtyp\_and12\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXandTwoXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{3}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}  \wedge  \ottnt{T_{{\mathrm{3}}}}}{%
+{\ottdrulename{subtyp\_and2\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXfldXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottsym{\{}  \ottmv{a}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{\}}  \ottsym{<:}  \ottsym{\{}  \ottmv{a}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{\}}}{%
+{\ottdrulename{subtyp\_fld\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXtypXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{3}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{4}}}}}%
+}{
+\Gamma  {\vdash_\#}  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{3}}}}  \ottsym{\}}  \ottsym{<:}  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{4}}}}  \ottsym{\}}}{%
+{\ottdrulename{subtyp\_typ\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXselOneXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{\}}}%
+}{
+\Gamma  {\vdash_\#}  \ottmv{x}  \ottsym{.}  \ottmv{A}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{subtyp\_sel1\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXselTwoXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{\}}}%
+}{
+\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \ottmv{x}  \ottsym{.}  \ottmv{A}}{%
+{\ottdrulename{subtyp\_sel2\_t}}{}%
+}}
+
+
+\newcommand{\ottdrulesubtypXXallXXt}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{3}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{4}}}}}%
+}{
+\Gamma  {\vdash_\#}  \forall \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{<:}  \forall \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{3}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{4}}}}}{%
+{\ottdrulename{subtyp\_all\_t}}{}%
+}}
+
+\newcommand{\ottdefnsubtypXXt}[1]{\begin{ottdefnblock}[#1]{$\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}$}{}
+\ottusedrule{\ottdrulesubtypXXtopXXt{}}
+\ottusedrule{\ottdrulesubtypXXbotXXt{}}
+\ottusedrule{\ottdrulesubtypXXreflXXt{}}
+\ottusedrule{\ottdrulesubtypXXtransXXt{}}
+\ottusedrule{\ottdrulesubtypXXandOneOneXXt{}}
+\ottusedrule{\ottdrulesubtypXXandOneTwoXXt{}}
+\ottusedrule{\ottdrulesubtypXXandTwoXXt{}}
+\ottusedrule{\ottdrulesubtypXXfldXXt{}}
+\ottusedrule{\ottdrulesubtypXXtypXXt{}}
+\ottusedrule{\ottdrulesubtypXXselOneXXt{}}
+\ottusedrule{\ottdrulesubtypXXselTwoXXt{}}
+\ottusedrule{\ottdrulesubtypXXallXXt{}}
+\end{ottdefnblock}}
+
+
+\newcommand{\ottdefnsTightTyping}{
+\ottdefntyXXtrmXXt{}\ottdefnsubtypXXt{}}
+
+% defns InvertibleTyping
+%% defn ty_var_inv
+\newcommand{\ottdruletyXXpreciseXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \gg  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_precise\_inv}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXdecXXtrmXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottsym{\{}  \ottmv{a}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{\}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottsym{\{}  \ottmv{a}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{\}}}{%
+{\ottdrulename{ty\_dec\_trm\_inv}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXdecXXtypXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{3}}}}  \ottsym{\}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{3}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{4}}}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{4}}}}  \ottsym{\}}}{%
+{\ottdrulename{ty\_dec\_typ\_inv}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXbndXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottsym{[}  \ottmv{x}  \ottsym{/}  \ottmv{z}  \ottsym{]}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
+{\ottdrulename{ty\_bnd\_inv}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXallXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \forall \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{3}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{T_{{\mathrm{3}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{4}}}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \forall \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{4}}}}}{%
+{\ottdrulename{ty\_all\_inv}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXandXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \wedge  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_and\_inv}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXselXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{y}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \gg  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{\}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottmv{y}  \ottsym{.}  \ottmv{A}}{%
+{\ottdrulename{ty\_sel\_inv}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXtopXXinv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \top}{%
+{\ottdrulename{ty\_top\_inv}}{}%
+}}
+
+\newcommand{\ottdefntyXXvarXXinv}[1]{\begin{ottdefnblock}[#1]{$\Gamma  {\vdash_{\#\#} }  \ottmv{x}  \ottsym{:}  \ottnt{T}$}{}
+\ottusedrule{\ottdruletyXXpreciseXXinv{}}
+\ottusedrule{\ottdruletyXXdecXXtrmXXinv{}}
+\ottusedrule{\ottdruletyXXdecXXtypXXinv{}}
+\ottusedrule{\ottdruletyXXbndXXinv{}}
+\ottusedrule{\ottdruletyXXallXXinv{}}
+\ottusedrule{\ottdruletyXXandXXinv{}}
+\ottusedrule{\ottdruletyXXselXXinv{}}
+\ottusedrule{\ottdruletyXXtopXXinv{}}
+\end{ottdefnblock}}
+
+%% defn ty_val_inv
+\newcommand{\ottdruletyXXpreciseXXinvXXv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_!}  \ottnt{val}  \ottsym{:}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T}}{%
+{\ottdrulename{ty\_precise\_inv\_v}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXallXXinvXXv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \forall \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{3}}}}}%
+\ottpremise{\Gamma  {\vdash_\#}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{T_{{\mathrm{3}}}}  \ottsym{<:}  \ottnt{T_{{\mathrm{4}}}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \forall \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{T_{{\mathrm{4}}}}}{%
+{\ottdrulename{ty\_all\_inv\_v}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXandXXinvXXv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \wedge  \ottnt{T_{{\mathrm{2}}}}}{%
+{\ottdrulename{ty\_and\_inv\_v}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXselXXinvXXv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}}%
+\ottpremise{\Gamma  {\vdash_!}  \ottmv{y}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \gg  \ottsym{\{}  \ottmv{A}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{.}  \ottsym{.}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{\}}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottmv{y}  \ottsym{.}  \ottmv{A}}{%
+{\ottdrulename{ty\_sel\_inv\_v}}{}%
+}}
+
+
+\newcommand{\ottdruletyXXtopXXinvXXv}[1]{\ottdrule[#1]{%
+\ottpremise{\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T}}%
+}{
+\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \top}{%
+{\ottdrulename{ty\_top\_inv\_v}}{}%
+}}
+
+\newcommand{\ottdefntyXXvalXXinv}[1]{\begin{ottdefnblock}[#1]{$\Gamma  {\vdash_{\#\#} }  \ottnt{val}  \ottsym{:}  \ottnt{T}$}{}
+\ottusedrule{\ottdruletyXXpreciseXXinvXXv{}}
+\ottusedrule{\ottdruletyXXallXXinvXXv{}}
+\ottusedrule{\ottdruletyXXandXXinvXXv{}}
+\ottusedrule{\ottdruletyXXselXXinvXXv{}}
+\ottusedrule{\ottdruletyXXtopXXinvXXv{}}
+\end{ottdefnblock}}
+
+
+\newcommand{\ottdefnsInvertibleTyping}{
+\ottdefntyXXvarXXinv{}\ottdefntyXXvalXXinv{}}
+
+% defns OperationalSemantics
 %% defn red
 \newcommand{\ottdruleredXXsel}[1]{\ottdrule[#1]{%
 \ottpremise{\ottnt{s}  \ottsym{(}  \ottmv{x}  \ottsym{)}  \ottsym{=}  \nu \, \ottsym{(}  \ottmv{z}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \ottnt{defs}}%
@@ -475,12 +1015,16 @@
 \end{ottdefnblock}}
 
 
-\newcommand{\ottdefnsJop}{
+\newcommand{\ottdefnsOperationalSemantics}{
 \ottdefnred{}}
 
 \newcommand{\ottdefnss}{
-\ottdefnsJtyping
-\ottdefnsJop
+\ottdefnsTyping
+\ottdefnsInert
+\ottdefnsPreciseTyping
+\ottdefnsTightTyping
+\ottdefnsInvertibleTyping
+\ottdefnsOperationalSemantics
 }
 
 \newcommand{\ottall}{\ottmetavars\\[0pt]
@@ -491,7 +1035,7 @@
 \ottall
 
 \begin{verbatim}
-Definition rules:        31 good    0 bad
-Definition rule clauses: 64 good    0 bad
+Definition rules:        80 good    0 bad
+Definition rule clauses: 177 good    0 bad
 \end{verbatim}
 \end{document}

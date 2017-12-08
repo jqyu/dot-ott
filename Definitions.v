@@ -2,8 +2,8 @@
 Require Import Metalib.Metatheory.
 (** syntax *)
 Definition termvar := var.
-Definition trmlabel := nat.
-Definition typlabel := nat.
+Definition trmlabel := atom.
+Definition typlabel := atom.
 
 Inductive varref : Set := 
  | var_termvar_b (_:nat)
@@ -296,10 +296,18 @@ Fixpoint defs_has (ds: defs) (d: def) : Prop :=
       d' = d \/ defs_has ds' d
   end.
 
+Fixpoint type_labels (T: typ) : atoms :=
+  match T with
+  | typ_dec (dec_trm a _) => singleton a
+  | typ_dec (dec_typ A _ _) => singleton A
+  | typ_and T1 T2 => type_labels T1 \u type_labels T2
+  | _ => empty
+  end.
+
 
 (** definitions *)
 
-(* defns Jtyping *)
+(* defns Typing *)
 Inductive ty_trm : ctx -> trm -> typ -> Prop :=    (* defn ty_trm *)
  | ty_var : forall (G:ctx) (x:termvar) (T:typ),
       (binds ( x ) ( T ) ( G ))  ->
@@ -311,9 +319,10 @@ Inductive ty_trm : ctx -> trm -> typ -> Prop :=    (* defn ty_trm *)
      ty_trm G (trm_var (var_termvar_f x)) (typ_all T1 T2) ->
      ty_trm G (trm_var (var_termvar_f y)) T1 ->
      ty_trm G (trm_app (var_termvar_f x) (var_termvar_f y))  (open_typ_wrt_varref  T2   (var_termvar_f y) ) 
- | ty_new_intro : forall (L:vars) (G:ctx) (T:typ) (defs5:defs),
-      ( forall x , x \notin  L  -> ty_defs  ( x ~  (open_typ_wrt_varref  T   (var_termvar_f x) )   ++  G )   ( open_defs_wrt_varref defs5 (var_termvar_f x) )   ( open_typ_wrt_varref T (var_termvar_f x) )  )  ->
-      ( forall x , x \notin  L  -> ty_trm G (trm_val (val_new  ( open_typ_wrt_varref T (var_termvar_f x) )  defs5)) (typ_bnd T) ) 
+ | ty_new_intro : forall (L:vars) (G:ctx) (T1:typ) (defs5:defs) (T2:typ),
+      ( forall x , x \notin  L  ->  ( T1  =   ( open_typ_wrt_varref T2 (var_termvar_f x) )  )  )  ->
+      ( forall x , x \notin  L  -> ty_defs  ( x ~ T1  ++  G )   ( open_defs_wrt_varref defs5 (var_termvar_f x) )   ( open_typ_wrt_varref T2 (var_termvar_f x) )  )  ->
+     ty_trm G (trm_val (val_new T1 defs5)) (typ_bnd T2)
  | ty_new_elim : forall (G:ctx) (x:termvar) (a:trmlabel) (T:typ),
      ty_trm G (trm_var (var_termvar_f x)) (typ_dec (dec_trm a T)) ->
      ty_trm G (trm_sel (var_termvar_f x) a) T
@@ -389,12 +398,203 @@ with subtyp : ctx -> typ -> typ -> Prop :=    (* defn subtyp *)
  | subtyp_sel2 : forall (G:ctx) (T1:typ) (x:termvar) (A:typlabel) (T2:typ),
      ty_trm G (trm_var (var_termvar_f x)) (typ_dec (dec_typ A T1 T2)) ->
      subtyp G T1 (typ_sel (var_termvar_f x) A)
- | subtyp_forall : forall (L:vars) (G:ctx) (T1 T2 T3 T4:typ),
+ | subtyp_all : forall (L:vars) (G:ctx) (T1 T2 T3 T4:typ),
      subtyp G T3 T1 ->
       ( forall x , x \notin  L  -> subtyp  ( x ~ T1  ++  G )   ( open_typ_wrt_varref T2 (var_termvar_f x) )   ( open_typ_wrt_varref T4 (var_termvar_f x) )  )  ->
      subtyp G (typ_all T1 T2) (typ_all T3 T4).
 
-(* defns Jop *)
+(* defns Inert *)
+Inductive record_type : typ -> Prop :=    (* defn record_type *)
+ | rt_one_trm : forall (a:trmlabel) (T:typ),
+     lc_typ T ->
+     record_type (typ_dec (dec_trm a T))
+ | rt_one_typ : forall (A:typlabel) (T:typ),
+     lc_typ T ->
+     record_type (typ_dec (dec_typ A T T))
+ | rt_and_trm : forall (T1:typ) (a:trmlabel) (T2:typ),
+     lc_typ T2 ->
+     record_type T1 ->
+      ( a  \notin type_labels  T1 )  ->
+     record_type (typ_and T1 (typ_dec (dec_trm a T2)))
+ | rt_and_typ : forall (T1:typ) (A:typlabel) (T2:typ),
+     lc_typ T2 ->
+     record_type T1 ->
+      ( A  \notin type_labels  T1 )  ->
+     record_type (typ_and T1 (typ_dec (dec_typ A T2 T2)))
+with inert_typ : typ -> Prop :=    (* defn inert_typ *)
+ | inert_typ_all : forall (T1 T2:typ),
+     lc_typ T1 ->
+     lc_typ (typ_all T1 T2) ->
+     inert_typ (typ_all T1 T2)
+ | inert_typ_bnd : forall (L:vars) (T:typ),
+      ( forall x , x \notin  L  -> record_type  ( open_typ_wrt_varref T (var_termvar_f x) )  )  ->
+     inert_typ (typ_bnd T)
+with inert_ctx : ctx -> Prop :=    (* defn inert_ctx *)
+ | inert_empty : 
+     inert_ctx  nil 
+ | inert_all : forall (G:ctx) (x:termvar) (T:typ),
+     inert_ctx G ->
+     inert_typ T ->
+      ( x  \notin dom  G )  ->
+     inert_ctx  ( x ~ T  ++  G ) .
+
+(* defns PreciseTyping *)
+Inductive ty_val_p : ctx -> val -> typ -> Prop :=    (* defn ty_val_p *)
+ | ty_all_intro_p : forall (L:vars) (G:ctx) (T1:typ) (t:trm) (T2:typ),
+      ( forall x , x \notin  L  -> ty_trm  ( x ~ T1  ++  G )   ( open_trm_wrt_varref t (var_termvar_f x) )   ( open_typ_wrt_varref T2 (var_termvar_f x) )  )  ->
+     ty_val_p G (val_lambda T1 t) (typ_all T1 T2)
+ | ty_new_intro_p : forall (L:vars) (G:ctx) (T:typ) (defs5:defs),
+      ( forall x , x \notin  L  -> ty_defs  ( x ~  ( open_typ_wrt_varref T (var_termvar_f x) )   ++  G )   ( open_defs_wrt_varref defs5 (var_termvar_f x) )   ( open_typ_wrt_varref T (var_termvar_f x) )  )  ->
+      ( forall x , x \notin  L  -> ty_val_p G (val_new  ( open_typ_wrt_varref T (var_termvar_f x) )  defs5) (typ_bnd T) ) 
+with precise_flow : ctx -> termvar -> typ -> typ -> Prop :=    (* defn precise_flow *)
+ | pf_bind : forall (G:ctx) (x:termvar) (T:typ),
+      (binds ( x ) ( T ) ( G ))  ->
+     precise_flow G x T T
+ | pf_open : forall (G:ctx) (x:termvar) (T1 T2:typ),
+     precise_flow G x T1 (typ_bnd T2) ->
+     precise_flow G x T1  (open_typ_wrt_varref  T2   (var_termvar_f x) ) 
+ | pf_and1 : forall (G:ctx) (x:termvar) (T1 T2 T3:typ),
+     precise_flow G x T1 (typ_and T2 T3) ->
+     precise_flow G x T1 T2
+ | pf_and2 : forall (G:ctx) (x:termvar) (T1 T3 T2:typ),
+     precise_flow G x T1 (typ_and T2 T3) ->
+     precise_flow G x T1 T3.
+
+(* defns TightTyping *)
+Inductive ty_trm_t : ctx -> trm -> typ -> Prop :=    (* defn ty_trm_t *)
+ | ty_var_t : forall (G:ctx) (x:termvar) (T:typ),
+      (binds ( x ) ( T ) ( G ))  ->
+     ty_trm_t G (trm_var (var_termvar_f x)) T
+ | ty_all_intro_t : forall (L:vars) (G:ctx) (T1:typ) (t:trm) (T2:typ),
+      ( forall x , x \notin  L  -> ty_trm  ( x ~ T1  ++  G )   ( open_trm_wrt_varref t (var_termvar_f x) )   ( open_typ_wrt_varref T2 (var_termvar_f x) )  )  ->
+     ty_trm_t G (trm_val (val_lambda T1 t)) (typ_all T1 T2)
+ | ty_all_elim_t : forall (G:ctx) (x y:termvar) (T2 T1:typ),
+     ty_trm_t G (trm_var (var_termvar_f x)) (typ_all T1 T2) ->
+     ty_trm_t G (trm_var (var_termvar_f y)) T1 ->
+     ty_trm_t G (trm_app (var_termvar_f x) (var_termvar_f y))  (open_typ_wrt_varref  T2   (var_termvar_f y) ) 
+ | ty_new_intro_t : forall (L:vars) (G:ctx) (T:typ) (defs5:defs),
+      ( forall x , x \notin  L  -> ty_defs  ( x ~  ( open_typ_wrt_varref T (var_termvar_f x) )   ++  G )   ( open_defs_wrt_varref defs5 (var_termvar_f x) )   ( open_typ_wrt_varref T (var_termvar_f x) )  )  ->
+      ( forall x , x \notin  L  -> ty_trm_t G (trm_val (val_new  ( open_typ_wrt_varref T (var_termvar_f x) )  defs5)) (typ_bnd T) ) 
+ | ty_new_elim_t : forall (G:ctx) (x:termvar) (a:trmlabel) (T:typ),
+     ty_trm_t G (trm_var (var_termvar_f x)) (typ_dec (dec_trm a T)) ->
+     ty_trm_t G (trm_sel (var_termvar_f x) a) T
+ | ty_let_t : forall (L:vars) (G:ctx) (t1 t2:trm) (T2 T1 T:typ),
+     ty_trm_t G t1 T1 ->
+      ( forall x , x \notin  L  -> ty_trm  ( x ~ T  ++  G )   ( open_trm_wrt_varref t2 (var_termvar_f x) )  T2 )  ->
+     ty_trm_t G (trm_let t1 t2) T2
+ | ty_rec_intro_t : forall (L:vars) (G:ctx) (x:termvar) (T:typ),
+      ( forall z , z \notin  L  -> ty_trm_t G (trm_var (var_termvar_f x))  ( open_typ_wrt_varref T (var_termvar_f z) )  )  ->
+     ty_trm_t G (trm_var (var_termvar_f x)) (typ_bnd T)
+ | ty_rec_elim_t : forall (G:ctx) (x:termvar) (T:typ),
+     ty_trm_t G (trm_var (var_termvar_f x)) (typ_bnd T) ->
+     ty_trm_t G (trm_var (var_termvar_f x))  (open_typ_wrt_varref  T   (var_termvar_f x) ) 
+ | ty_and_intro_t : forall (G:ctx) (x:termvar) (T1 T2:typ),
+     ty_trm_t G (trm_var (var_termvar_f x)) T1 ->
+     ty_trm_t G (trm_var (var_termvar_f x)) T2 ->
+     ty_trm_t G (trm_var (var_termvar_f x)) (typ_and T1 T2)
+ | ty_sub_t : forall (G:ctx) (t:trm) (T2 T1:typ),
+     ty_trm_t G t T1 ->
+     subtyp_t G T1 T2 ->
+     ty_trm_t G t T2
+with subtyp_t : ctx -> typ -> typ -> Prop :=    (* defn subtyp_t *)
+ | subtyp_top_t : forall (G:ctx) (T:typ),
+     lc_typ T ->
+     subtyp_t G T typ_top
+ | subtyp_bot_t : forall (G:ctx) (T:typ),
+     lc_typ T ->
+     subtyp_t G typ_bot T
+ | subtyp_refl_t : forall (G:ctx) (T:typ),
+     lc_typ T ->
+     subtyp_t G T T
+ | subtyp_trans_t : forall (G:ctx) (T1 T3 T2:typ),
+     subtyp_t G T1 T2 ->
+     subtyp_t G T2 T3 ->
+     subtyp_t G T1 T3
+ | subtyp_and11_t : forall (G:ctx) (T1 T2:typ),
+     lc_typ T2 ->
+     lc_typ T1 ->
+     subtyp_t G (typ_and T1 T2) T1
+ | subtyp_and12_t : forall (G:ctx) (T1 T2:typ),
+     lc_typ T1 ->
+     lc_typ T2 ->
+     subtyp_t G (typ_and T1 T2) T2
+ | subtyp_and2_t : forall (G:ctx) (T1 T2 T3:typ),
+     subtyp_t G T1 T2 ->
+     subtyp_t G T1 T3 ->
+     subtyp_t G T1 (typ_and T2 T3)
+ | subtyp_fld_t : forall (G:ctx) (a:trmlabel) (T1 T2:typ),
+     subtyp_t G T1 T2 ->
+     subtyp_t G (typ_dec (dec_trm a T1)) (typ_dec (dec_trm a T2))
+ | subtyp_typ_t : forall (G:ctx) (A:typlabel) (T2 T3 T1 T4:typ),
+     subtyp_t G T1 T2 ->
+     subtyp_t G T3 T4 ->
+     subtyp_t G (typ_dec (dec_typ A T2 T3)) (typ_dec (dec_typ A T1 T4))
+ | subtyp_sel1_t : forall (G:ctx) (x:termvar) (A:typlabel) (T2 T1:typ),
+     precise_flow G x T1 (typ_dec (dec_typ A T2 T2)) ->
+     subtyp_t G (typ_sel (var_termvar_f x) A) T2
+ | subtyp_sel2_t : forall (G:ctx) (T2:typ) (x:termvar) (A:typlabel) (T1:typ),
+     precise_flow G x T1 (typ_dec (dec_typ A T2 T2)) ->
+     subtyp_t G T2 (typ_sel (var_termvar_f x) A)
+ | subtyp_all_t : forall (L:vars) (G:ctx) (T1 T2 T3 T4:typ),
+     subtyp_t G T3 T1 ->
+      ( forall x , x \notin  L  -> subtyp  ( x ~ T1  ++  G )   ( open_typ_wrt_varref T2 (var_termvar_f x) )   ( open_typ_wrt_varref T4 (var_termvar_f x) )  )  ->
+     subtyp_t G (typ_all T1 T2) (typ_all T3 T4).
+
+(* defns InvertibleTyping *)
+Inductive ty_var_inv : ctx -> termvar -> typ -> Prop :=    (* defn ty_var_inv *)
+ | ty_precise_inv : forall (G:ctx) (x:termvar) (T2 T1:typ),
+     precise_flow G x T1 T2 ->
+     ty_var_inv G x T2
+ | ty_dec_trm_inv : forall (G:ctx) (x:termvar) (a:trmlabel) (T2 T1:typ),
+     ty_var_inv G x (typ_dec (dec_trm a T1)) ->
+     subtyp_t G T1 T2 ->
+     ty_var_inv G x (typ_dec (dec_trm a T2))
+ | ty_dec_typ_inv : forall (G:ctx) (x:termvar) (A:typlabel) (T1 T4 T2 T3:typ),
+     ty_var_inv G x (typ_dec (dec_typ A T2 T3)) ->
+     subtyp_t G T1 T2 ->
+     subtyp_t G T3 T4 ->
+     ty_var_inv G x (typ_dec (dec_typ A T1 T4))
+ | ty_bnd_inv : forall (G:ctx) (x:termvar) (T:typ),
+     ty_var_inv G x  (open_typ_wrt_varref  T   (var_termvar_f x) )  ->
+     ty_var_inv G x (typ_bnd T)
+ | ty_all_inv : forall (L:vars) (G:ctx) (x:termvar) (T1 T4 T2 T3:typ),
+     ty_var_inv G x (typ_all T2 T3) ->
+     subtyp_t G T1 T2 ->
+      ( forall z , z \notin  L  -> subtyp  ( z ~ T1  ++  G )   ( open_typ_wrt_varref T3 (var_termvar_f z) )   ( open_typ_wrt_varref T4 (var_termvar_f z) )  )  ->
+     ty_var_inv G x (typ_all T1 T4)
+ | ty_and_inv : forall (G:ctx) (x:termvar) (T1 T2:typ),
+     ty_var_inv G x T1 ->
+     ty_var_inv G x T2 ->
+     ty_var_inv G x (typ_and T1 T2)
+ | ty_sel_inv : forall (G:ctx) (x y:termvar) (A:typlabel) (T1 T2:typ),
+     ty_var_inv G x T1 ->
+     precise_flow G y T2 (typ_dec (dec_typ A T1 T1)) ->
+     ty_var_inv G x (typ_sel (var_termvar_f y) A)
+ | ty_top_inv : forall (G:ctx) (x:termvar) (T:typ),
+     ty_var_inv G x T ->
+     ty_var_inv G x typ_top
+with ty_val_inv : ctx -> val -> typ -> Prop :=    (* defn ty_val_inv *)
+ | ty_precise_inv_v : forall (G:ctx) (val5:val) (T:typ),
+     ty_val_p G val5 T ->
+     ty_val_inv G val5 T
+ | ty_all_inv_v : forall (L:vars) (G:ctx) (val5:val) (T1 T4 T2 T3:typ),
+     ty_val_inv G val5 (typ_all T2 T3) ->
+     subtyp_t G T1 T2 ->
+      ( forall z , z \notin  L  -> subtyp  ( z ~ T1  ++  G )   ( open_typ_wrt_varref T3 (var_termvar_f z) )   ( open_typ_wrt_varref T4 (var_termvar_f z) )  )  ->
+     ty_val_inv G val5 (typ_all T1 T4)
+ | ty_and_inv_v : forall (G:ctx) (val5:val) (T1 T2:typ),
+     ty_val_inv G val5 T1 ->
+     ty_val_inv G val5 T2 ->
+     ty_val_inv G val5 (typ_and T1 T2)
+ | ty_sel_inv_v : forall (G:ctx) (val5:val) (y:termvar) (A:typlabel) (T1 T2:typ),
+     ty_val_inv G val5 T1 ->
+     precise_flow G y T2 (typ_dec (dec_typ A T1 T1)) ->
+     ty_val_inv G val5 (typ_sel (var_termvar_f y) A)
+ | ty_top_inv_v : forall (G:ctx) (val5:val) (T:typ),
+     ty_val_inv G val5 T ->
+     ty_val_inv G val5 typ_top.
+
+(* defns OperationalSemantics *)
 Inductive red : stack -> trm -> stack -> trm -> Prop :=    (* defn red *)
  | red_sel : forall (s:stack) (x:termvar) (a:trmlabel) (t:trm) (T:typ) (defs5:defs),
       (binds ( x ) ( (trm_val (val_new T defs5)) ) ( s ))  ->
@@ -417,6 +617,6 @@ Inductive red : stack -> trm -> stack -> trm -> Prop :=    (* defn red *)
 
 
 (** infrastructure *)
-Hint Constructors ty_trm ty_def ty_defs subtyp red lc_varref lc_dec lc_typ lc_def lc_defs lc_val lc_trm.
+Hint Constructors ty_trm ty_def ty_defs subtyp record_type inert_typ inert_ctx ty_val_p precise_flow ty_trm_t subtyp_t ty_var_inv ty_val_inv red lc_varref lc_dec lc_typ lc_def lc_defs lc_val lc_trm.
 
 
