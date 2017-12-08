@@ -125,8 +125,7 @@
 \ottprodline{|}{\ottmv{A}  \notin \, \ottkw{labels} \, \ottnt{T}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\ottnt{s}  \ottsym{(}  \ottmv{x}  \ottsym{)}  \ottsym{=}  \ottnt{t}}{}{}{}{}\ottprodnewline
 \ottprodline{|}{\ottkw{uniq} \, \ottnt{s}}{}{}{}{}\ottprodnewline
-\ottprodline{|}{\ottnt{d}  \in  \ottnt{defs}}{}{}{}{}\ottprodnewline
-\ottprodline{|}{\ottnt{T_{{\mathrm{1}}}}  \ottsym{=}  \ottnt{T_{{\mathrm{2}}}}}{}{}{}{}}
+\ottprodline{|}{\ottnt{d}  \in  \ottnt{defs}}{}{}{}{}}
 
 \newcommand{\ottTyping}{
 \ottrulehead{\ottnt{Typing}}{::=}{}\ottprodnewline
@@ -237,10 +236,9 @@
 
 
 \newcommand{\ottdruletyXXnewXXintro}[1]{\ottdrule[#1]{%
-\ottpremise{\ottnt{T_{{\mathrm{1}}}}  \ottsym{=}  \ottnt{T_{{\mathrm{2}}}}}%
-\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \vdash  \ottnt{defs}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}}%
+\ottpremise{\ottsym{(}  \Gamma  \ottsym{,}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \vdash  \ottnt{defs}  \ottsym{:}  \ottnt{T}}%
 }{
-\Gamma  \vdash  \nu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{1}}}}  \ottsym{)}  \ottnt{defs}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T_{{\mathrm{2}}}}  \ottsym{)}}{%
+\Gamma  \vdash  \nu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}  \ottnt{defs}  \ottsym{:}  \mu \, \ottsym{(}  \ottmv{x}  \ottsym{:}  \ottnt{T}  \ottsym{)}}{%
 {\ottdrulename{ty\_new\_intro}}{}%
 }}
 
@@ -1036,6 +1034,6 @@
 
 \begin{verbatim}
 Definition rules:        80 good    0 bad
-Definition rule clauses: 177 good    0 bad
+Definition rule clauses: 176 good    0 bad
 \end{verbatim}
 \end{document}

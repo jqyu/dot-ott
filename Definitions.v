@@ -319,10 +319,9 @@ Inductive ty_trm : ctx -> trm -> typ -> Prop :=    (* defn ty_trm *)
      ty_trm G (trm_var (var_termvar_f x)) (typ_all T1 T2) ->
      ty_trm G (trm_var (var_termvar_f y)) T1 ->
      ty_trm G (trm_app (var_termvar_f x) (var_termvar_f y))  (open_typ_wrt_varref  T2   (var_termvar_f y) ) 
- | ty_new_intro : forall (L:vars) (G:ctx) (T1:typ) (defs5:defs) (T2:typ),
-      ( forall x , x \notin  L  ->  ( T1  =   ( open_typ_wrt_varref T2 (var_termvar_f x) )  )  )  ->
-      ( forall x , x \notin  L  -> ty_defs  ( x ~ T1  ++  G )   ( open_defs_wrt_varref defs5 (var_termvar_f x) )   ( open_typ_wrt_varref T2 (var_termvar_f x) )  )  ->
-     ty_trm G (trm_val (val_new T1 defs5)) (typ_bnd T2)
+ | ty_new_intro : forall (L:vars) (G:ctx) (T:typ) (defs5:defs),
+      ( forall x , x \notin  L  -> ty_defs  ( x ~  ( open_typ_wrt_varref T (var_termvar_f x) )   ++  G )   ( open_defs_wrt_varref defs5 (var_termvar_f x) )   ( open_typ_wrt_varref T (var_termvar_f x) )  )  ->
+      ( forall x , x \notin  L  -> ty_trm G (trm_val (val_new  ( open_typ_wrt_varref T (var_termvar_f x) )  defs5)) (typ_bnd T) ) 
  | ty_new_elim : forall (G:ctx) (x:termvar) (a:trmlabel) (T:typ),
      ty_trm G (trm_var (var_termvar_f x)) (typ_dec (dec_trm a T)) ->
      ty_trm G (trm_sel (var_termvar_f x) a) T

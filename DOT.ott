@@ -115,7 +115,6 @@ grammar
     | s ( x ) = t        :: :: stack_binds {{ coq (binds ([[x]]) ([[t]]) ([[s]])) }}
     | uniq s             :: :: stack_uniq {{ coq (uniq [[s]]) }}
     | d `in` defs        :: :: defs_has {{ coq (defs_has [[defs]] [[d]]) }}
-    | T1 = T2            :: :: typ_equal {{ coq ([[T1]] = [[T2]]) }}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Typing Judgements
@@ -140,10 +139,9 @@ defns
       --------------------------- :: all_elim
       G |- x y : [ y / z ] T2
 
-      T1 = T2
-      ( G , x : T1 ) |- defs : T2
-      --------------------------------------- :: new_intro
-      G |- nu ( x : T1 ) defs : mu ( x : T2 )
+      ( G , x : T ) |- defs : T
+      ------------------------------------- :: new_intro
+      G |- nu ( x : T ) defs : mu ( x : T )
 
       G |- x : { a : T }
       ------------------ :: new_elim
