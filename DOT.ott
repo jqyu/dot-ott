@@ -1,0 +1,256 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOT Grammar
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+metavar termvar, x, y, z ::= {{ repr-locally-nameless }}
+metavar trmlabel, a, b, c ::= {{ coq nat }}
+metavar typlabel, A, B, C ::= {{ coq nat }}
+
+grammar
+  varref, v :: 'var_' ::=
+    | x :: :: termvar
+
+  trm, t :: 'trm_' ::=
+    | v                ::   :: var
+    | val              ::   :: val
+    | v . a            ::   :: sel
+    | v1 v2            ::   :: app
+    | let x = t1 in t2 ::   :: let (+ bind x in t2 +)
+    | [ v / x ] t      :: M :: open_trm {{ coq (open_trm_wrt_varref [[x t]] [[v]]) }}
+
+  val :: 'val_' ::=
+    | nu ( x : T ) defs :: :: new (+ bind x in defs +)
+    | \ ( x : T ) . t   :: :: lambda (+ bind x in t +)
+
+  defs :: 'defs_' ::=
+    | {  }           ::   :: nil
+    | d /\ defs      ::   :: cons
+    | [ v / x ] defs :: M :: open_trm {{ coq (open_defs_wrt_varref [[x defs]] [[v]]) }}
+
+  def, d :: 'def_' ::=
+    | { a = t } :: :: trm
+    | { A = T } :: :: typ
+
+  typ, T :: 'typ_' ::=
+    | forall ( x : T1 ) T2 ::   :: all (+ bind x in T2 +)
+    | mu ( x : T )         ::   :: bnd (+ bind x in T +)
+    | dec                  ::   :: dec
+    | v . A                ::   :: sel
+    | T1 /\ T2             ::   :: and
+    | top                  ::   :: top
+    | bot                  ::   :: bot
+    | [ v / x ] T          :: M :: open_typ {{ coq (open_typ_wrt_varref [[x T]] [[v]]) }}
+
+  dec :: 'dec_' ::=
+    | { a : T }         :: :: trm
+    | { A : T1 . . T2 } :: :: typ
+
+  terminals :: 'terminals_' ::=
+    | mu      :: :: mu {{ tex \mu }}
+    | nu      :: :: nu {{ tex \nu }}
+    | \       :: :: lambda {{ tex \lambda }}
+    | /\      :: :: and {{ tex \wedge }}
+    | top     :: :: top {{ tex \top }}
+    | bot     :: :: bottom {{ tex \bot }}
+    | forall  :: :: forall {{ tex \forall }}
+    | empty   :: :: empty {{ tex \emptyset }}
+    | |-      :: :: turnstile {{ tex \vdash }}
+    | |->     :: :: reduces {{ tex \rightarrow }}
+    | `notin` :: :: notin {{ tex \notin }}
+    | `in`    :: :: in {{ tex \in }}
+    | ,       :: :: comma
+
+substitutions
+  single varref x :: subst
+
+freevars
+  varref x :: fv
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Formulae
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+embed
+{{ coq
+
+Fixpoint defs_has (ds: defs) (d: def) : Prop :=
+  match ds with
+  | defs_nil => False
+  | defs_cons d' ds' =>
+      d' = d \/ defs_has ds' d
+  end.
+}}
+
+grammar
+  ctx, E, F, G {{ tex \Gamma }} :: 'ctx_' ::= {{ coq list (atom*typ) }}
+    | empty         :: :: empty {{ coq nil }}
+    | ( G , x : T ) :: :: cons {{ coq ([[x]]~[[T]] ++ [[G]]) }}
+
+  stack, s :: 'stack_' ::= {{ coq list (atom*trm) }}
+    | empty         :: :: empty {{ coq nil }}
+    | ( s , x : t ) :: :: cons {{ coq ([[x]]~[[t]] ++ [[s]]) }}
+
+  formula :: formula_ ::=
+    | judgement      :: :: judgement
+    | G ( x ) = T    :: :: ctx_binds {{ coq (binds ([[x]]) ([[T]]) ([[G]])) }}
+    | uniq G         :: :: ctx_uniq {{ coq (uniq [[G]]) }}
+    | s ( x ) = t    :: :: stack_binds {{ coq (binds ([[x]]) ([[t]]) ([[s]])) }}
+    | uniq s         :: :: stack_uniq {{ coq (uniq [[s]]) }}
+    | d `in` defs    :: :: defs_Has {{ coq (defs_has [[defs]] [[d]]) }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Typing Judgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+defns
+  Jtyping :: '' ::=
+
+    defn
+    G |- t : T :: :: ty_trm :: 'ty_' by
+
+      G ( x ) = T
+      ----------- :: var
+      G |- x : T
+
+      ( G , x : T1 ) |- t : T2
+      -------------------------------------------- :: all_intro
+      G |- \ ( x : T1 ) . t : forall ( x : T1 ) T2
+
+      G |- x : forall ( z : T1 ) T2
+      G |- y : T1
+      --------------------------- :: all_elim
+      G |- x y : [ y / z ] T2
+
+      ( G , x : [ x / x ] T ) |- defs : T
+      ------------------------------------- :: new_intro
+      G |- nu ( x : T ) defs : mu ( x : T )
+
+      G |- x : { a : T }
+      ------------------ :: new_elim
+      G |- x . a : T
+
+      G |- t1 : T1
+      ( G , x : T1 ) |- t2 : T2
+      -------------------------- :: let
+      G |- let x = t1 in t2 : T2
+
+      G |- x : T
+      --------------------- :: rec_intro
+      G |- x : mu ( z : T )
+
+      G |- x : mu ( z : T )
+      --------------------- :: rec_elim
+      G |- x : [ x / z ] T
+
+      G |- x : T1
+      G |- x : T2
+      ----------------- :: and_intro
+      G |- x : T1 /\ T2
+
+      G |- t : T1
+      G |- T1 <: T2
+      ------------- :: sub
+      G |- t : T2
+
+    defn
+    G |- d : T :: :: ty_def :: 'ty_def_' by
+
+      G |- t : T
+      -------------------------- :: trm
+      G |- { a = t } : { a : T }
+
+      -------------------------------- :: typ
+      G |- { A = T } : { A : T . . T }
+
+    defn
+    G |- defs : T :: :: ty_defs :: 'ty_defs_' by
+
+      G |- d : T
+      ------------------ :: one
+      G |- d /\ {  } : T
+
+      G |- d : T1
+      G |- defs : T2
+      ------------------------- :: cons
+      G |- d /\ defs : T1 /\ T2
+
+    defn
+    G |- T1 <: T2 :: :: subtyp :: 'subtyp_' by
+
+      ------------- :: top
+      G |- T <: top
+
+      ------------- :: bot
+      G |- bot <: T
+
+      ----------- :: refl
+      G |- T <: T
+
+      G |- T1 <: T2
+      G |- T2 <: T3
+      ------------- :: trans
+      G |- T1 <: T3
+
+      ------------------- :: and11
+      G |- T1 /\ T2 <: T1
+
+      ------------------- :: and12
+      G |- T1 /\ T2 <: T2
+
+      G |- T1 <: T2
+      G |- T1 <: T3
+      ------------------- :: and2
+      G |- T1 <: T2 /\ T3
+
+      G |- T1 <: T2
+      ----------------------------- :: fld
+      G |- { a : T1 } <: { a : T2 }
+
+      G |- T1 <: T2
+      G |- T3 <: T4
+      ------------------------------------------- :: typ
+      G |- { A : T2 . . T3 } <: { A : T1 . . T4 }
+
+      G |- x : { A : T1 . . T2 }
+      -------------------------- :: sel1
+      G |- x . A <: T2
+
+      G |- x : { A : T1 . . T2 }
+      -------------------------- :: sel2
+      G |- T1 <: x . A
+
+      G |- T3 <: T1
+      ( G , x : T1 ) |- T2 <: T4
+      ------------------------------------------------- :: forall
+      G |- forall ( x : T1 ) T2 <: forall ( x : T3 ) T4
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Operational Semantics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+defns
+  Jop :: '' ::=
+
+    defn
+    ( s1 , t1 ) |-> ( s2 , t2 ) :: :: red :: 'red_' by
+
+      s ( x ) = nu ( z : T ) defs
+      { a = t } `in` [ x / z ] defs
+      ----------------------------- :: sel
+      ( s , x . a ) |-> ( s , t )
+
+      s ( x ) = \ ( z : T1 ) . t
+      ----------------------------------- :: app
+      ( s , x y ) |-> ( s , [ y / z ] t )
+
+      ---------------------------------------------------- :: let_val
+      ( s , let x = val in t ) |-> ( ( s , x : val ) , t )
+
+      ---------------------------------------------- :: let_var
+      ( s , let x = y in t ) |-> ( s , [ y / x ] t )
+
+      ( s1 , t1 ) |-> ( s2 , t2 )
+      ------------------------------------------------------- :: let_tgt
+      ( s1 , let x = t1 in t3 ) |-> ( s2 , let x = t2 in t3 )
